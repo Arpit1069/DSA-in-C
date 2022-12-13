@@ -1,98 +1,74 @@
-#include <iostream>
-
-using namespace std;
+#include <stdio.h>
+#include<limits.h>
  
-template <class T>
-void Print(T& vec, int n, string s){
-    cout << s << ": [" << flush;
-    for (int i=0; i<n; i++){
-        cout << vec[i] << flush;
-        if (i < n-1){
-            cout << ", " << flush;
-        }
+//Function to find maximum element of the array
+int max_element(int array[], int size) 
+{  
+    // Initializing max variable to minimum value so that it can be updated
+    // when we encounter any element which is greater than it.
+    int max = INT_MIN;  
+    for (int i = 0; i < size; i++)
+    {
+        //Updating max when array[i] is greater than max
+        if (array[i] > max)  
+        max = array[i];  
     }
-    cout << "]" << endl;
+    //return the max element
+    return max;  
 }
  
-int Max(int A[], int n){
-    int max = -32768;
-    for (int i=0; i<n; i++){
-        if (A[i] > max){
-            max = A[i];
-        }
-    }
-    return max;
-}
+//Implementing bucket sort 
+void Bucket_Sort(int array[], int size) 
+{  
+    //Finding max element of array which we will use to create buckets
+    int max = max_element(array, size); 
  
-// Linked List node
-class Node{
-public:
-    int value;
-    Node* next;
-};
+    // Creating buckets 
+    int bucket[max+1];  
  
-void Insert(Node** ptrBins, int idx){
-    Node* temp = new Node;
-    temp->value = idx;
-    temp->next = nullptr;
+    //Initializing buckets to zero
+    for (int i = 0; i <= max; i++)  
+    bucket[i] = 0;  
  
-    if (ptrBins[idx] == nullptr){ // ptrBins[idx] is head ptr
-        ptrBins[idx] = temp;
-    } else {
-        Node* p = ptrBins[idx];
-        while (p->next != nullptr){
-            p = p->next;
-        }
-        p->next = temp;
-    }
-}
+    // Pushing elements in their corresponding buckets
+    for (int i = 0; i < size; i++)  
+    bucket[array[i]]++;
  
-int Delete(Node** ptrBins, int idx){
-    Node* p = ptrBins[idx];  // ptrBins[idx] is head ptr
-    ptrBins[idx] = ptrBins[idx]->next;
-    int x = p->value;
-    delete p;
-    return x;
-}
+    // Merging buckets effectively
+    int j=0;   // j is a variable which points at the index we are updating
+    for (int i = 0; i <= max; i++)  
+    { 
+        // Running while loop until there is an element in the bucket
+        while (bucket[i] > 0)  
+        {  
+            // Updating array and increment j          
+            array[j++] = i;  
  
-void BinSort(int A[], int n){
-    int max = Max(A, n);
+            // Decreasing count of bucket element
+            bucket[i]--;   
+        }  
+    }  
+}  
  
-    // Create bins array
-    Node** bins = new Node* [max + 1];
+/* The main() begins */
+int main()
+{
+    int array[100], i, num; 
  
-    // Initialize bins array with nullptr
-    for (int i=0; i<max+1; i++){
-        bins[i] = nullptr;
-    }
+    printf("Enter the size of array: ");   
+    scanf("%d", &num);   
+    printf("Enter the %d elements to be sorted:\n",num); 
+    for (i = 0; i < num; i++)
+        scanf("%d", &array[i]); 
+    printf("\nThe array of elements before sorting: \n");
+    for (i = 0; i < num; i++)
+        printf("%d ", array[i]);  
+    printf("\nThe array of elements after sorting: \n"); 
  
-    // Update count array values based on A values
-    for (int i=0; i<n; i++){
-        Insert(bins, A[i]);
-    }
- 
-    // Update A with sorted elements
-    int i = 0;
-    int j = 0;
-    while (i < max+1){
-        while (bins[i] != nullptr){
-            A[j++] = Delete(bins, i);
-        }
-        i++;
-    }
- 
-    // Delete heap memory
-    delete [] bins;
-}
- 
-int main() {
- 
-    int A[] = {2, 5, 8, 12, 3, 6, 7, 10};
-    int n = sizeof(A)/sizeof(A[0]);
- 
-    Print(A, n, "\t\tA");
-    BinSort(A, n);
-    Print(A, n, " Sorted A");
-    cout << endl;
+    // Calling bucket sort function 
+    Bucket_Sort(array, num); 
+    for (i = 0; i < num; i++)
+        printf("%d ", array[i]);   
+    printf("\n");     
     return 0;
 }
